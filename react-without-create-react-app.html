@@ -29,19 +29,16 @@
     <div id="app"></div>
 
     <script type="text/babel">
-      class Hello extends React.Component {
-        render() {
-          return (
-            <div>
-              <h1>Hello {this.props.name}</h1>
-              <button onClick={this.handleClick}>Click here</button>
-            </div>
-          );
+      class Counter extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            count: 0,
+          };
         }
-
-        handleClick = () => {
-          alert("Hi from --> " + this.props.name);
-        };
+        render() {
+          return <div>{this.state.count}</div>;
+        }
       }
 
       class App extends React.Component {
@@ -49,9 +46,7 @@
           return (
             <div>
               <hr />
-              <Hello name="Timmy Trumpet" />
-              <Hello name="Steve Aoki" />
-              <Hello name="Bimarsh" />
+              <Counter />
             </div>
           );
         }
