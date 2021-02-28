@@ -31,14 +31,36 @@
     <script type="text/babel">
       class Hello extends React.Component {
         render() {
-          return <h1>Hello from React!</h1>;
+          return (
+            <div>
+              <h1>Hello {this.props.name}</h1>
+              <button onClick={this.handleClick}>Click here</button>
+            </div>
+          );
+        }
+
+        handleClick = () => {
+          alert("Hi from --> " + this.props.name);
+        };
+      }
+
+      class App extends React.Component {
+        render() {
+          return (
+            <div>
+              <hr />
+              <Hello name="Timmy Trumpet" />
+              <Hello name="Steve Aoki" />
+              <Hello name="Bimarsh" />
+            </div>
+          );
         }
       }
 
       /*
         Render the above component onto the webpage
       */
-      ReactDOM.render(<Hello />, document.querySelector("#app"));
+      ReactDOM.render(<App />, document.querySelector("#app"));
     </script>
   </body>
 </html>
