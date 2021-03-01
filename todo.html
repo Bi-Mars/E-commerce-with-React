@@ -38,13 +38,17 @@
               <h1> Tasks </h1>
               <ul>
                 {this.state.tasks.map((task, i) => (
-                  <li key={i}>{task}</li>
+                  <li key={i}>
+                    <button onClick={() => this.deleteTask(i)}> Delete </button>
+                    {task}
+                  </li>
                 ))}
               </ul>
               <div>
                 <input onChange={this.handleChange} value={this.state.input} />
                 <button onClick={this.addTask}> Add Task </button>
               </div>
+              Number of Tasks: {this.state.tasks.length}
             </div>
           );
         }
@@ -60,6 +64,16 @@
             tasks: [...state.tasks, state.input],
             input: "",
           }));
+        };
+
+        deleteTask = (index) => {
+          this.setState((state) => {
+            const tasks = [...state.tasks];
+            tasks.splice(index, 1);
+            return {
+              tasks: tasks,
+            };
+          });
         };
       }
 
