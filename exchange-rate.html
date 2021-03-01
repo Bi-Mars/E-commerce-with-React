@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script
+      src="https://unpkg.com/react@17/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+
+    <title>Exchange Rate</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.currencies = [
+            "AUD",
+            "CAD",
+            "USD",
+            "CHF",
+            "CNY",
+            "INR",
+            "EUR",
+            "GBP",
+            "JPY",
+            "NZD",
+          ];
+
+          this.cached = {};
+          this.state = {
+            base_currency: "USD",
+            other_currency: "EUR",
+            amount: 0,
+            converted_amount: 0,
+          };
+        }
+        render() {
+          return (
+            <div>
+              <div>
+                <select
+                  onChange={this.makeSelection}
+                  name="base_currency"
+                  value={this.state.base_currency}
+                >
+                  {this.currencies.map((currency) => (
+                    <option key={currency} value={currency}>
+                      {currency}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  value={this.state.amount}
+                  onChange={this.convertAmount}
+                />
+              </div>
+              <div>
+                <select
+                  onChange={this.makeSelection}
+                  name="other_currency"
+                  value={this.state.other_currency}
+                >
+                  {this.currencies.map((currency) => (
+                    <option key={currency} value={currency}>
+                      {currency}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  disabled={true}
+                  value={
+                    this.state.converted_amount === null
+                      ? "Calculating..."
+                      : this.state.converted_amount
+                  }
+                />
+              </div>
+            </div>
+          );
+        }
+
+        makeSelection = (event) => {
+          this.setState(
+            {
+              [event.target.name]: event.target.value,
+            },
+            this.calculateAmount
+          );
+        };
+
+        convertAmount = (event) => {
+          this.setState(
+            {
+              amount: event.target.value,
+              converted_amount: null,
+            },
+            this.calculateAmount
+          );
+        };
+
+        calculateAmount = (event) => {
+          const value = parseFloat(this.state.amount);
+          if (isNaN(value)) {
+            return;
+          }
+
+          if (
+            this.cached[this.state.base_currency] !== undefined &&
+            Date.now() - this.cached[this.state.base_currency].timestamp <
+              1000 * 60
+          ) {
+            this.setState({
+              converted_amount:
+                this.cached[this.state.base_currency].rates[
+                  this.state.other_currency
+                ] * value,
+            });
+            return;
+          }
+          fetch(
+            `https://api.exchangeratesapi.io/latest?base=${this.state.base_currency}`
+          )
+            .then((response) => response.json()) // parse the response data into json
+            .then((data) => {
+              this.cached[this.state.base_currency] = {
+                rates: data.rates,
+                timestamp: Date.now(),
+              };
+              this.setState({
+                converted_amount: data.rates[this.state.other_currency] * value,
+              });
+            });
+        };
+      }
+
+      /*
+        Render the above component onto the webpage
+      */
+      ReactDOM.render(<App />, document.querySelector("#app"));
+    </script>
+  </body>
+</html>
