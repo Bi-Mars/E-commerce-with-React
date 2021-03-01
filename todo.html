@@ -39,7 +39,9 @@
               <ul>
                 {this.state.tasks.map((task, i) => (
                   <li key={i}>
-                    <button onClick={() => this.deleteTask(i)}> Delete </button>
+                    <button data-index={i} onClick={this.deleteTask}>
+                      Delete
+                    </button>
                     {task}
                   </li>
                 ))}
@@ -66,7 +68,8 @@
           }));
         };
 
-        deleteTask = (index) => {
+        deleteTask = (event) => {
+          const index = event.target.dataset.index;
           this.setState((state) => {
             const tasks = [...state.tasks];
             tasks.splice(index, 1);
